@@ -1,0 +1,28 @@
+import { ValidationPipe } from '@nestjs/common';
+import { NestFactory } from '@nestjs/core';
+import { AppModule } from './app.module';
+
+async function bootstrap() {
+  const app = await NestFactory.create(AppModule);
+
+  app.setGlobalPrefix('api');
+
+  const corsOrigin = process.env.CORS_ORIGIN
+    ? process.env.CORS_ORIGIN.split(',')
+    : true;
+  app.enableCors({ origin: corsOrigin, credentials: true });
+
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      transform: true,
+    }),
+  );
+
+  app.enableShutdownHooks();
+
+  const port = process.env.PORT ? Number(process.env.PORT) : 3001;
+  await app.listen(port);
+  console.log(`🌊 d'Praieira API rodando em http://localhost:${port}/api`);
+}
+void bootstrap();

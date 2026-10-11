@@ -1,0 +1,22 @@
+import { Test, TestingModule } from '@nestjs/testing';
+import { AppController } from './app.controller';
+
+describe('AppController', () => {
+  let appController: AppController;
+
+  beforeEach(async () => {
+    const app: TestingModule = await Test.createTestingModule({
+      controllers: [AppController],
+    }).compile();
+
+    appController = app.get<AppController>(AppController);
+  });
+
+  describe('root', () => {
+    it('should return the brand info', () => {
+      const brand = appController.getBrand();
+      expect(brand.name).toBe("d'Praieira");
+      expect(brand.instagramHandle).toBe('@dpraeiraoficial');
+    });
+  });
+});
