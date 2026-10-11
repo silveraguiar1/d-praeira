@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -9,7 +9,24 @@ import { formatPrice, parseSizes } from "@/lib/format";
 import { useCart } from "@/context/cart-context";
 import type { Product } from "@/lib/types";
 
-export default function ProductDetailPage() {
+function ProductDetailSkeleton() {
+  return (
+    <div className="mx-auto max-w-4xl px-4 py-10">
+      <div className="h-4 w-64 animate-pulse rounded bg-sand-200" />
+      <div className="mt-8 grid gap-8 md:grid-cols-2">
+        <div className="aspect-square animate-pulse rounded-3xl bg-sand-200" />
+        <div className="space-y-4 pt-4">
+          <div className="h-4 w-24 animate-pulse rounded bg-sand-200" />
+          <div className="h-8 w-3/4 animate-pulse rounded bg-sand-200" />
+          <div className="h-6 w-32 animate-pulse rounded bg-sand-200" />
+          <div className="h-24 w-full animate-pulse rounded bg-sand-200" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ProductDetailContent() {
   const params = useParams<{ slug: string }>();
   const slug = params.slug;
 
@@ -225,5 +242,13 @@ export default function ProductDetailPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function ProductDetailPage() {
+  return (
+    <Suspense fallback={<ProductDetailSkeleton />}>
+      <ProductDetailContent />
+    </Suspense>
   );
 }

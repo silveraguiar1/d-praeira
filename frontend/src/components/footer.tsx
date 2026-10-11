@@ -1,3 +1,6 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
 
 const categories = [
@@ -10,6 +13,12 @@ const categories = [
 ];
 
 export default function Footer() {
+  const [year, setYear] = useState<number | null>(null);
+
+  useEffect(() => {
+    setYear(new Date().getFullYear());
+  }, []);
+
   return (
     <footer className="mt-16 border-t border-sand-200 bg-white">
       <div className="mx-auto grid max-w-6xl gap-10 px-4 py-12 md:grid-cols-3">
@@ -69,7 +78,7 @@ export default function Footer() {
 
       <div className="border-t border-sand-200 py-4">
         <p className="text-center text-xs text-ink/40">
-          © {new Date().getFullYear()} d'Praieira — Moda Praia Casual. Todos os
+          © {year ?? "____"} d'Praieira — Moda Praia Casual. Todos os
           direitos reservados.
         </p>
       </div>

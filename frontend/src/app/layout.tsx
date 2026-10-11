@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { CartProvider } from "@/context/cart-context";
@@ -24,6 +25,16 @@ export const metadata: Metadata = {
     "Moda praia casual com a leveza do litoral. Biquínis, maiôs, cangas, bolsas e acessórios. Mais que moda, um estilo de vida!",
 };
 
+function HeaderFallback() {
+  return (
+    <header className="sticky top-0 z-50 border-b border-sand-200 bg-sand-50/90 backdrop-blur">
+      <div className="mx-auto flex h-16 max-w-6xl items-center px-4">
+        <img src="/logo.png" alt="d'Praieira" className="h-11 w-auto" />
+      </div>
+    </header>
+  );
+}
+
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
@@ -32,7 +43,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <body className="flex min-h-full flex-col bg-sand-50 text-ink">
         <CartProvider>
-          <Header />
+          <Suspense fallback={<HeaderFallback />}>
+            <Header />
+          </Suspense>
           <main className="flex-1">{children}</main>
           <Footer />
         </CartProvider>

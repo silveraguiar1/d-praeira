@@ -27,6 +27,17 @@ export async function apiFetch<T>(
   return (await res.json()) as T;
 }
 
+export async function safeApiFetch<T>(
+  path: string,
+  init?: RequestInit,
+): Promise<T | null> {
+  try {
+    return await apiFetch<T>(path, init);
+  } catch {
+    return null;
+  }
+}
+
 export interface ProductQuery {
   category?: string;
   search?: string;

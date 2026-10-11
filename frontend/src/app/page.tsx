@@ -1,16 +1,72 @@
+import { Suspense } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { apiFetch } from "@/lib/api";
-import type { Category, Product, ProductListResponse } from "@/lib/types";
+import { safeApiFetch } from "@/lib/api";
+import type { Category, ProductListResponse } from "@/lib/types";
 import ProductCard from "@/components/product-card";
 import CategoryCard from "@/components/category-card";
 
-export default async function HomePage() {
+async function HomeSections() {
   const [categories, featured] = await Promise.all([
-    apiFetch<Category[]>("/categories"),
-    apiFetch<ProductListResponse>("/products?featured=true&limit=8"),
+    safeApiFetch<Category[]>("/categories"),
+    safeApiFetch<ProductListResponse>("/products?featured=true&limit=8"),
   ]);
+  const featuredProducts = featured?.data ?? [];
 
+  return (
+    <>
+      {categories && categories.length > 0 && (
+        <section className="mx-auto max-w-6xl px-4 py-16">
+          <div className="mb-8 flex items-end justify-between">
+            <div>
+              <h2 className="text-2xl font-bold text-ink md:text-3xl">
+                Nossas categorias
+              </h2>
+              <p className="mt-1 text-ink/60">
+                Encontre o que combina com o seu verão
+              </p>
+            </div>
+          </div>
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {categories.map((category) => (
+              <CategoryCard key={category.id} category={category} />
+            ))}
+          </div>
+        </section>
+      )}
+
+      {featuredProducts.length > 0 && (
+        <section className="bg-white py-16">
+          <div className="mx-auto max-w-6xl px-4">
+            <div className="mb-8 flex items-end justify-between">
+              <div>
+                <h2 className="text-2xl font-bold text-ink md:text-3xl">
+                  Destaques da temporada
+                </h2>
+                <p className="mt-1 text-ink/60">
+                  Os queridinhos que não podem faltar
+                </p>
+              </div>
+              <Link
+                href="/produtos"
+                className="hidden text-sm font-semibold text-brand-600 hover:text-brand-700 sm:block"
+              >
+                Ver todos →
+              </Link>
+            </div>
+            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+              {featuredProducts.map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+    </>
+  );
+}
+
+export default function HomePage() {
   return (
     <>
       <section className="relative overflow-hidden">
@@ -57,49 +113,9 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-4 py-16">
-        <div className="mb-8 flex items-end justify-between">
-          <div>
-            <h2 className="text-2xl font-bold text-ink md:text-3xl">
-              Nossas categorias
-            </h2>
-            <p className="mt-1 text-ink/60">
-              Encontre o que combina com o seu verão
-            </p>
-          </div>
-        </div>
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {categories.map((category) => (
-            <CategoryCard key={category.id} category={category} />
-          ))}
-        </div>
-      </section>
-
-      <section className="bg-white py-16">
-        <div className="mx-auto max-w-6xl px-4">
-          <div className="mb-8 flex items-end justify-between">
-            <div>
-              <h2 className="text-2xl font-bold text-ink md:text-3xl">
-                Destaques da temporada
-              </h2>
-              <p className="mt-1 text-ink/60">
-                Os queridinhos que não podem faltar
-              </p>
-            </div>
-            <Link
-              href="/produtos"
-              className="hidden text-sm font-semibold text-brand-600 hover:text-brand-700 sm:block"
-            >
-              Ver todos →
-            </Link>
-          </div>
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            {featured.data.map((product: Product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
-        </div>
-      </section>
+      <Suspense fallback={null}>
+        <HomeSections />
+      </Suspense>
 
       <section className="mx-auto max-w-6xl px-4 py-16">
         <div className="flex flex-col items-center gap-6 rounded-3xl bg-brand-500 px-6 py-12 text-center text-white md:py-16">
